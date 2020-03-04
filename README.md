@@ -1,5 +1,5 @@
 # snyk-pylock-test
-A simple wrapper script that produces issues data (vulernabilties and licenses) from a requirements.txt format file using the [Snyk Test API for PIP](https://snyk.docs.apiary.io/#reference/test/pip).
+A simple wrapper script that produces issues data (vulernabilties and licenses) from a requirements.txt format (and soon to be Pipfile.lock format) file using the [Snyk Test API for PIP](https://snyk.docs.apiary.io/#reference/test/pip).
 
 At the time of building this, the Snyk CLI requires an environment where the packages in requirements.txt are installable in order to run 'snyk test' successfully.  This is a workaround for users who would like to simply get a list of issues from a static list of packages and versions for a python project without an environment to install them.
 
