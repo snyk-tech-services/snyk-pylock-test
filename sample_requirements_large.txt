@@ -8,7 +8,7 @@ Jinja2==2.6
 Logbook==0.9.1
 Markdown==2.6.8
 MarkupSafe==0.15
-Pillow==2.9.0
+Pillow==6.2.0
 PyCAPTCHA==0.4.1
 PyHamcrest==1.8.1
 PyJWT==1.1.0
