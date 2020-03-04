@@ -153,7 +153,7 @@ unittest2==1.1.0
 universal-analytics-python==0.2.4
 uritemplate==0.6
 uritemplate.py==0.3.0
-urllib3==1.22
+urllib3==1.24.2
 vessel==4.6.4
 w-annotation==3.11.13
 w-binder-manager==1.0.44
