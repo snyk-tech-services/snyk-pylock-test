@@ -22,6 +22,12 @@ To put it all together:
 
 ```python3 snyk-pylock-test.py sample_requirements.txt| jq '.issues' | snyk-to-html -o sample_results.html```
 
+  Output:
+  ```
+        info: parsing as requirements file format
+        Vulnerability snapshot saved at sample_results.html
+  ```
+
 ## Todo
 - Put JSON parsing inside the python script so ```jq``` is not required
 - provide support for Pipfile.lock format files
