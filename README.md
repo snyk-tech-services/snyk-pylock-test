@@ -1,7 +1,7 @@
 # snyk-pylock-test
 A simple wrapper script that produces issues data (vulernabilties and licenses) from a requirements.txt format (and soon to be Pipfile.lock format) file using the [Snyk Test API for PIP](https://snyk.docs.apiary.io/#reference/test/pip).
 
-At the time of building this, the Snyk CLI requires an environment where the packages in requirements.txt are installable in order to run 'snyk test' successfully.  This is a workaround for users who would like to simply get a list of issues from a static list of packages and versions for a python project without an environment to install them.
+At the time of building this, the Snyk CLI requires an environment where the packages in requirements.txt are installable in order to run 'snyk test' successfully.  This is a workaround for users who would like to simply get a list of issues at the command line from a static list of packages and versions for a python project without an environment to install them.
 
 This script will output the results in json format. [jq](https://stedolan.github.io/jq/download/) and [snyk-to-html](https://github.com/snyk/snyk-to-html) can be used quite easily to generate an HTML report of the results that can be shared, as described in the _Generate HTML Report_ section
 
