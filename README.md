@@ -41,7 +41,6 @@ To put it all together:
 
   Output:
   ```
-        info: parsing as requirements file format
         Vulnerability snapshot saved at sample_results.html
   ```
 
