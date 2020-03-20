@@ -37,10 +37,7 @@ The JSON output can be provided to the snyk-to-html utility by way of jq to prod
 
 To put it all together:
 
-``./snyk-pylock-test.py -j -f sample_requirements.txt | jq '.issues' | snyk-to-html -o sample_results.html```
-
-	Output:
-	Vulnerability snapshot saved at sample_results.html
+```./snyk-pylock-test.py -j -f sample_requirements.txt | jq '.issues' | snyk-to-html -o sample_results.html```
 
   Output:
   ```
