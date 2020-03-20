@@ -10,19 +10,40 @@ This script will output the results in json format. [jq](https://stedolan.github
 - API Token set in ```SNYK_TOKEN``` environment variable
 
 ## Usage
-```python3 snyk-pylock-test.py <requirements_file>```
+```usage:
+    $ ./snyk-pylock-test.py [options] [source]
 
-To use the provided example file
-```python3 snyk-pylock-test.py sample_requirements.txt```
+options:
+   -d
+    enable debug mode
+   -j
+    output results in JSON format
+
+source (pick one):
+   -f <input_filename>
+      <input_filename> can be a frozen requirements file or a piplock format file
+
+   -p <package>==<version>
+
+examples:
+    ./snyk-pylock-test.py -f requirements-freeze.txt
+    ./snyk-pylock-test.py -p django==1.11
+    ./snyk-pylock-test.py -j -f requirements-freeze.txt
+    ./snyk-pylock-test.py -dj -p django==1.11```
 
 ## Generate HTML Report
 The JSON output can be provided to the snyk-to-html utility by way of jq to produce an HTML report.  See [sample_results.html](https://github.com/snyk-tech-services/snyk-pylock-test/blob/master/sample_results.html) provided.  
 
 To put it all together:
 
-```python3 snyk-pylock-test.py sample_requirements.txt| jq '.issues' | snyk-to-html -o sample_results.html```
+``./snyk-pylock-test.py -j -f sample_requirements.txt | jq '.issues' | snyk-to-html -o sample_results.html```
+
+	Output:
+	Vulnerability snapshot saved at sample_results.html
 
 ## Todo
 - Put JSON parsing inside the python script so ```jq``` is not required
 - provide support for Pipfile.lock format files
 - base64 encode API input for efficiency
+- port to Typescript
+- include Remediation advice in the terminal output
