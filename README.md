@@ -1,5 +1,5 @@
 # snyk-pylock-test
-A simple wrapper script that produces issues data (vulernabilties and licenses) from a requirements.txt format (and soon to be Pipfile.lock format) file using the [Snyk Test API for PIP](https://snyk.docs.apiary.io/#reference/test/pip).
+A wrapper script that produces issues data (vulernabilties and licenses) from a requirements.txt format (and soon to be Pipfile.lock format) file using the [Snyk Test API for PIP](https://snyk.docs.apiary.io/#reference/test/pip).
 
 At the time of building this, the Snyk CLI requires an environment where the packages in requirements.txt are installable in order to run 'snyk test' successfully.  This is a workaround for users who would like to simply get a list of issues at the command line from a static list of packages and versions for a python project without an environment to install them.
 
@@ -29,7 +29,8 @@ examples:
     ./snyk-pylock-test.py -f requirements-freeze.txt
     ./snyk-pylock-test.py -p django==1.11
     ./snyk-pylock-test.py -j -f requirements-freeze.txt
-    ./snyk-pylock-test.py -dj -p django==1.11```
+    ./snyk-pylock-test.py -dj -p django==1.11
+```
 
 ## Generate HTML Report
 The JSON output can be provided to the snyk-to-html utility by way of jq to produce an HTML report.  See [sample_results.html](https://github.com/snyk-tech-services/snyk-pylock-test/blob/master/sample_results.html) provided.  
@@ -53,3 +54,4 @@ To put it all together:
 - base64 encode API input for efficiency
 - port to Typescript
 - include Remediation advice in the terminal output
+- set exit code 1 if vulns are found
