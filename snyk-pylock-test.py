@@ -112,7 +112,7 @@ else:
     fmt_end = "\033[0m"
 
     #sort the vulns by severity, package
-    dict_severity = { 'high':0, 'medium': 1, 'low': 2 }
+    dict_severity = { 'high': 0, 'medium': 1, 'low': 2 }
 
     for vuln in sorted(resp['issues']['vulnerabilities'], key = lambda i: dict_severity[i['severity']]): 
       if (vuln['severity'] == 'low'):
