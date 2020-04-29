@@ -1,141 +1,153 @@
 #!/usr/local/bin/python3
+'''
+Reports issue data (vulnerabilities and licenses) from a requirements.txt
+format (and soon to be Pipfile.lock format) file using the Snyk Test API for PIP.
+'''
 import json
 import sys
 import getopt
 from os import getenv, environ, path
-from urllib.request import Request, urlopen 
+from urllib.request import Request, urlopen
 
-argumentList = sys.argv[1:]
-options = "p:f:hjd"
+argument_list = sys.argv[1:]
+OPTIONS = "p:f:hjd"
 
-try: 
-  arguments, values = getopt.getopt(argumentList, options)
+try:
+    arguments, values = getopt.getopt(argument_list, OPTIONS)
 except getopt.error as err:
-  print(str(err))
-  exit(2)
+    print(str(err))
+    sys.exit(2)
 
-debug = False
-jsonoutput = False
-testmode = ""
+DEBUG = False
+JSONOUTPUT = False
+TESTMODE = ""
 
-for currentArgument, currentValue in arguments:
-  if (currentArgument in ("-d")):
-    print("DEBUG mode enabled", file=sys.stderr)
-    debug = True
-  if (currentArgument in ("-j")):
-    if (debug == True): 
-      print("DEBUG: output format set to JSON", file=sys.stderr)
-    jsonoutput = True
-  if (currentArgument in ("-p")):
-    if (debug == True):
-      print("DEBUG: package name set to", currentValue, file=sys.stderr)
-    testmode = "package"
-    packagestring = currentValue
-  elif (currentArgument in ("-f")):
-    if (debug == True):
-      print("DEBUG: freeze requirements set to", currentValue, file=sys.stderr)
-    testmode = "freezefile"
-    freezefile = currentValue
+for current_argument, current_value in arguments:
+    if current_argument in "-d":
+        print("DEBUG mode enabled", file=sys.stderr)
+        DEBUG = True
+    if current_argument in "-j":
+        if DEBUG:
+            print("DEBUG: output format set to JSON", file=sys.stderr)
+        JSONOUTPUT = True
+    if current_argument in "-p":
+        if DEBUG:
+            print("DEBUG: package name set to", current_value, file=sys.stderr)
+        TESTMODE = "package"
+        package_string = current_value
+    elif current_argument in "-f":
+        if DEBUG:
+            print("DEBUG: freeze requirements set to", current_value, file=sys.stderr)
+        TESTMODE = "freezefile"
+        FREEZEFILE = current_value
 
 # basic checks
-if (environ.get('SNYK_TOKEN', 'False') == 'False'):
-  print("token not set at $SNYK_TOKEN")
-  exit(1)
+if environ.get('SNYK_TOKEN', 'False') == 'False':
+    print("token not set at $SNYK_TOKEN")
+    sys.exit(1)
 
-headers = {
-  'Content-Type': 'application/json; charset=utf-8',
-  'Authorization': 'token %s'
+HEADERS = {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Authorization': 'token %s'
 }
 
-headers['Authorization'] = headers['Authorization'] % (getenv("SNYK_TOKEN"))
+HEADERS['Authorization'] = HEADERS['Authorization'] % getenv("SNYK_TOKEN")
 
-if ((len(sys.argv) < 3) or (testmode == "")):
-  print("\nusage: \n    $", sys.argv[0], "[options] [source]\n")
-  print("options:")
-  print("   -d")
-  print("    enable debug mode")
-  print("   -j")
-  print("    output results in JSON format")
-  print()
-  print("source (pick one):")
-  print("   -f <input_filename>")
-  print("      <input_filename> can be a frozen requirements file or a piplock format file\n")
-  print("   -p <package>==<version>")
-  print()
-  print("examples:")
-  print("   ", sys.argv[0], "-f requirements-freeze.txt")
-  print("   ", sys.argv[0], "-p django==1.11")
-  print("   ", sys.argv[0], "-j -f requirements-freeze.txt")
-  print("   ", sys.argv[0], "-dj -p django==1.11")
-  print()
-  exit(2)
+if ((len(sys.argv) < 3) or (TESTMODE == "")):
+    print("\nusage: \n    $", sys.argv[0], "[options] [source]\n")
+    print("options:")
+    print("   -d")
+    print("    enable debug mode")
+    print("   -j")
+    print("    output results in JSON format")
+    print()
+    print("source (pick one):")
+    print("   -f <input_filename>")
+    print("      <input_filename> can be a frozen requirements file or a piplock format file\n")
+    print("   -p <package>==<version>")
+    print()
+    print("examples:")
+    print("   ", sys.argv[0], "-f requirements-freeze.txt")
+    print("   ", sys.argv[0], "-p django==1.11")
+    print("   ", sys.argv[0], "-j -f requirements-freeze.txt")
+    print("   ", sys.argv[0], "-dj -p django==1.11")
+    print()
+    sys.exit(2)
 else:
-  if (testmode == 'freezefile'):
-    if (path.exists(freezefile) == False):
-      print("ERROR: specified input file does not exist");
-      exit(2)
-    with open(freezefile) as f:
-      read_data = f.read()
-    # determine if format is json (pipfile.lock format) or not (requirements.txt freeze format)
-    try:
-      package_data = json.loads(read_data)
-      print("pipfile.lock format support not yet implemented")
-      exit(2)
-    except ValueError as e:
-      # if error, its not json
-      if (debug == True):
-        print("DEBUG: parsing as requirements file format", file=sys.stderr)
-      package_data = read_data.replace('\n','\\n').rstrip('\\n')
+    if TESTMODE == 'freezefile':
+        if not path.exists(FREEZEFILE):
+            print("ERROR: specified input file does not exist")
+            sys.exit(2)
+        with open(FREEZEFILE) as f:
+            read_data = f.read()
+            # determine if format is json (pipfile.lock format)
+            # or not (requirements.txt freeze format)
+            try:
+                package_data = json.loads(read_data)
+                print("pipfile.lock format support not yet implemented")
+                sys.exit(2)
+            except ValueError:
+                # if error, its not json
+                if DEBUG:
+                    print("DEBUG: parsing as requirements file format", file=sys.stderr)
+                package_data = read_data.replace('\n', '\\n').rstrip('\\n')
 
-      values = """
-        {
-          "encoding": "plain",
-          "files": {
-            "target": {
-              "contents": "%s"
-            }
-          }
+                VALUES = """
+                    {
+                        "encoding": "plain",
+                        "files": {
+                            "target": {
+                                "contents": "%s"
+                            }
+                        }
+                    }
+                """
+
+                VALUES = VALUES % (package_data)
+                request = Request('https://snyk.io/api/v1/test/pip', \
+                    VALUES.encode('utf-8'), headers=HEADERS)
+
+    elif TESTMODE == 'package':
+        PACKAGE, VERSION = package_string.split('==')
+        request = Request('https://snyk.io/api/v1/test/pip/%s/%s' \
+            % (PACKAGE, VERSION), headers=HEADERS)
+
+    if not JSONOUTPUT:
+        resp = json.loads(urlopen(request).read().decode('utf-8'))
+        FMT_WHITE = "\033[1;37;40m "
+        FMT_END = "\033[0m"
+
+        #sort the vulns by severity, package
+        SEVERITY_LOOKUP = {
+            'high': 0,
+            'medium': 1,
+            'low': 2
         }
-      """
 
-      values = values % (package_data)
-      request = Request('https://snyk.io/api/v1/test/pip', values.encode('utf-8'), headers=headers)
+        for vuln in sorted(resp['issues']['vulnerabilities'], \
+            key=lambda i: SEVERITY_LOOKUP[i['severity']]):
+            if vuln['severity'] == 'low':
+                FMT_SEVERITY = "\033[1;34;40m "
+            elif vuln['severity'] == 'medium':
+                FMT_SEVERITY = "\033[1;33;40m "
+            elif vuln['severity'] == 'high':
+                FMT_SEVERITY = "\033[1;31;40m "
+            else:
+                FMT_SEVERITY = FMT_WHITE
 
-  elif (testmode == 'package'):
-    package, version = packagestring.split('==')
-    request = Request('https://snyk.io/api/v1/test/pip/%s/%s' % (package, version), headers=headers)
+            FMT_PACKAGE = FMT_SEVERITY.replace('[1', '[4').strip()
+            FMT_INFOLINK = FMT_WHITE.replace('[1', '[4').strip()
 
+            print()
+            print('%s   %s severity vulnerability found in %s' \
+                % (FMT_SEVERITY, vuln['severity'].capitalize(), \
+                FMT_PACKAGE + vuln['package'] + FMT_END))
+            print('%s   Description: %s' % (FMT_WHITE, vuln['title'] + FMT_END))
+            print('%s   Info: %s' % (FMT_WHITE, FMT_INFOLINK + vuln['url'] + FMT_END))
+            print('%s   Introduced through: %s' % (FMT_WHITE, str(vuln['from']) + FMT_END))
+            print()
+            print()
 
-  if (jsonoutput == False):
-    resp = json.loads(urlopen(request).read().decode('utf-8'))
-    fmt_white = "\033[1;37;40m "
-    fmt_end = "\033[0m"
-
-    #sort the vulns by severity, package
-    dict_severity = { 'high': 0, 'medium': 1, 'low': 2 }
-
-    for vuln in sorted(resp['issues']['vulnerabilities'], key = lambda i: dict_severity[i['severity']]): 
-      if (vuln['severity'] == 'low'):
-        fmt_severity = "\033[1;34;40m "
-      elif (vuln['severity'] == 'medium'):
-        fmt_severity = "\033[1;33;40m "
-      elif (vuln['severity'] == 'high'):
-        fmt_severity = "\033[1;31;40m "
-      else:
-        fmt_severity = fmt_white
-
-      fmt_package = fmt_severity.replace('[1', '[4').strip()
-      fmt_infolink = fmt_white.replace('[1', '[4').strip()
-
-      print()
-      print('%s   %s severity vulnerability found in %s' % (fmt_severity, vuln['severity'].capitalize(), fmt_package + vuln['package'] + fmt_end))
-      print('%s   Description: %s' % (fmt_white, vuln['title'] + fmt_end))
-      print('%s   Info: %s' % (fmt_white, fmt_infolink + vuln['url'] + fmt_end))
-      print('%s   Introduced through: %s' % (fmt_white, str(vuln['from']) + fmt_end))
-      print
-      print()
-
-  else:
-    resp = urlopen(request).read()
-    print(resp.decode('utf-8'))
-  
+    else:
+        resp = urlopen(request).read()
+        print(resp.decode('utf-8'))
