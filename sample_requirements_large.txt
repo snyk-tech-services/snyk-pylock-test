@@ -113,7 +113,7 @@ pyasn1-modules==0.0.5
 pycrypto==2.6
 pycryptodomex==3.9.6
 pyga==2.5.0
-pylint==1.1.0
+pylint==2.5.0
 pylzma==0.4.4
 python-dateutil==2.2
 python-gflags==2.0
