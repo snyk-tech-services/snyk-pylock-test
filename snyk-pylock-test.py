@@ -119,19 +119,22 @@ else:
 
         #sort the vulns by severity, package
         SEVERITY_LOOKUP = {
-            'high': 0,
-            'medium': 1,
-            'low': 2
+            'critical': 0,
+            'high': 1,
+            'medium': 2,
+            'low': 3
         }
 
         for vuln in sorted(resp['issues']['vulnerabilities'], \
             key=lambda i: SEVERITY_LOOKUP[i['severity']]):
             if vuln['severity'] == 'low':
-                FMT_SEVERITY = "\033[1;34;40m "
+                FMT_SEVERITY = "\033[1;34;188;187;200;40m "
             elif vuln['severity'] == 'medium':
-                FMT_SEVERITY = "\033[1;33;40m "
+                FMT_SEVERITY = "\033[1;33;237;213;94;40m "
             elif vuln['severity'] == 'high':
-                FMT_SEVERITY = "\033[1;31;40m "
+                FMT_SEVERITY = "\033[1;31;255;135;47;40m "
+            elif vuln['severity'] == 'critical':
+                FMT_SEVERITY = "\033[1;31;255;11;11;40m "
             else:
                 FMT_SEVERITY = FMT_WHITE
 
